@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
 using FormsNonTrivialDemo.Models;
-using FormsNonTrivialDemo.Views;
 
 namespace FormsNonTrivialDemo.ViewModels
 {
     public class ItemsViewModel : BaseViewModel
     {
-        public ObservableCollection<Item> Items { get; set; }
+        public ObservableCollection<Employee> Items { get; set; }
         public Command LoadItemsCommand { get; set; }
 
         public ItemsViewModel()
         {
             Title = "Browse";
-            Items = new ObservableCollection<Item>();
-            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-
-            MessagingCenter.Subscribe<NewItemPage, Item>(this, "AddItem", async (obj, item) =>
-            {
-                var newItem = item as Item;
-                Items.Add(newItem);
-                await DataStore.AddItemAsync(newItem);
-            });
+            Items = new ObservableCollection<Employee>();
+            LoadItemsCommand = new Command(() => ExecuteLoadItemsCommand());
         }
 
-        async Task ExecuteLoadItemsCommand()
+        void ExecuteLoadItemsCommand()
         {
             if (IsBusy)
                 return;
@@ -39,7 +30,7 @@ namespace FormsNonTrivialDemo.ViewModels
             try
             {
                 Items.Clear();
-                var items = await DataStore.GetItemsAsync(true);
+                var items = Employee.SampleData;
                 foreach (var item in items)
                 {
                     Items.Add(item);

@@ -1,41 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converter="clr-namespace:FormsNonTrivialDemo.Helpers"
+             xmlns:vm="clr-namespace:FormsNonTrivialDemo.ViewModels"
+             xmlns:model="clr-namespace:FormsNonTrivialDemo.Models"
              x:Class="FormsNonTrivialDemo.Views.ItemsPage"
-              Title="{Binding Title}"
+              Title="{Binding Title}" x:DataType="vm:ItemsViewModel"
              x:Name="BrowseItemsPage">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Clicked="AddItem_Clicked">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="UWP" Value="add.png"/>
-                </OnPlatform>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:BoolToColorConverter x:Key="ColorConverter" 
+                                          TrueColor="DarkGreen" 
+                                          FalseColor="#595959"/>
+            <converter:BoolToStringConverter x:Key="TextConverter" 
+                                            TrueString="VIP"
+                                             FalseString=""/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <StackLayout>
         <ListView x:Name="ItemsListView"
                 ItemsSource="{Binding Items}"
                 VerticalOptions="FillAndExpand"
-                HasUnevenRows="true"
-                RefreshCommand="{Binding LoadItemsCommand}"
-                IsPullToRefreshEnabled="true"
+                HasUnevenRows="False" RowHeight="140"
+                IsPullToRefreshEnabled="true" SelectionMode="None"
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                CachingStrategy="RecycleElement"
-                ItemSelected="OnItemSelected">
+                CachingStrategy="RecycleElement">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell>
+                    <ViewCell x:DataType="model:Employee">
                         <StackLayout Padding="10">
-                            <Label Text="{Binding Text}" 
-                                LineBreakMode="NoWrap" 
-                                Style="{DynamicResource ListItemTextStyle}" 
-                                FontSize="16" />
-                            <Label Text="{Binding Description}" 
-                                LineBreakMode="NoWrap"
-                                Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />
+                            <Label Text="{Binding Id}" FontAttributes="Bold"
+                                   TextColor="{Binding IsVIP,Converter={StaticResource ColorConverter}}"/>
+                            <Label FontAttributes="Bold" FontSize="Medium">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding FirstName}" />
+                                        <Span Text=" "/>
+                                        <Span Text="{Binding LastName}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Text="{Binding LastName}" FontSize="Small"/>
+                            <Label Text="{Binding FirstName}" FontSize="Small"/>
+                            <Label Text="{Binding IsVIP,Converter={StaticResource TextConverter}}"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding IsVIP,Converter={StaticResource ColorConverter}}"/>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
